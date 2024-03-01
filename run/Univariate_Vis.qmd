@@ -1,0 +1,58 @@
+---
+title: "Univariate Stats"
+author: "Jp and CIndy"
+format: pdf
+editor: visual
+---
+
+```{r}
+rise <- read.csv("~/Desktop/UCLA/FSPH/Q2/Biostats_200B/Project/BIOSTAT200BProject/data/rise.csv")
+```
+
+# Age_BL
+
+```{r}
+hist(rise$AGE_BL, xlab="age", 
+     main="Histogram of Age", col="cyan", breaks=20)
+```
+
+# Education
+
+```{r}
+ggplot(rise, aes(x=EDUC3)) + theme_bw() + 
+    geom_bar(aes(y = ..count..)) + ggtitle("Frequnency of Education by Level") + 
+    geom_text(aes(y=..count.. + 10, label=..count..), stat='count', size = 5)
+```
+
+# Race
+
+```{r}
+ggplot(rise, aes(x=RACE4)) + theme_bw() + 
+    geom_bar(aes(y = ..count..)) + ggtitle("Frequnency of Race") + 
+    geom_text(aes(y=..count.. + 10, label=..count..), stat='count', size = 5)
+```
+
+# Income
+
+```{r}
+ggplot(rise, aes(x=INCOME3)) + theme_bw() + 
+    geom_bar(aes(y = ..count..)) + ggtitle("Frequnency of Economic Status") + 
+    geom_text(aes(y=..count.. + 10, label=..count..), stat='count', size = 5)
+```
+
+# Marital Status
+
+```{r}
+ggplot(rise, aes(x=MARRIED2)) + theme_bw() + 
+    geom_bar(aes(y = ..count..)) + ggtitle("Frequnency of Marital Status") + 
+    geom_text(aes(y=..count.. + 10, label=..count..), stat='count', size = 5)
+```
+
+# Abuse History 
+
+```{r}
+ggplot(rise, aes(x=CTQ_WALKER_CAT_BL)) + theme_bw() + 
+    geom_bar(aes(y = ..count..)) + ggtitle("Frequnency of Abuse History") + 
+    geom_text(aes(y=..count.. + 10, label=..count..), stat='count', size = 5)
+
+```

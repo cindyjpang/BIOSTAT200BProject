@@ -1,0 +1,52 @@
+---
+title: "Modeling"
+author: "JP and Cindy"
+format: pdf
+editor: visual
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(ISLR)
+library(leaps)
+library(gtsummary)
+library(car)
+library(regclass)
+```
+
+```{r}
+rise <- read.csv("~/Desktop/UCLA/FSPH/Q2/Biostats_200B/Project/BIOSTAT200BProject/data/rise.csv")
+
+```
+
+```{r}
+data <- rise[, c(3:7, 12, 16)]
+
+#Best subsets
+oc.ht <- regsubsets(CESD_BL ~ ., data=data)
+par(mfrow=c(1,3)) # set plotting window to be 1 row and 3 columns
+plot(oc.ht, scale='adjr2');plot(oc.ht, scale='bic');plot(oc.ht, scale='Cp')
+
+see_models(oc.ht,report=6,aicc=FALSE,reltomin=FALSE)
+```
+
+```{r}
+#Model 1
+
+model_1 <- lm(CESD_BL ~ AGE_BL + RACE4 + HISPANIC + 
+                MARRIED2 + EDUC3 + CTQ_WALKER_CAT_BL, data=data)
+
+summary(model_1)
+tbl_regression(model_1)
+```
+
+```{r}
+#Model 2
+
+model_2 <- lm(CESD_BL ~ AGE_BL + RACE4 + 
+                EDUC3 + CTQ_WALKER_CAT_BL, data=data)
+
+summary(model_2)
+tbl_regression(model_2)
+```
+
