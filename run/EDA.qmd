@@ -1,0 +1,237 @@
+---
+title: "Exploratory Data Analysis"
+author: "Cindy J. Pang"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+#| label: setup
+
+library(dplyr)
+library(ggplot2)
+
+rise_dat <- read.csv("../data/rise_numerics.csv")
+
+```
+
+
+## Demographic Characteristics  
+
+### Age  
+
+```{r}
+#| label: age_bl vs cesd score
+
+ggplot(rise_dat, aes(x = AGE_BL, y = CESD_BL))+
+  geom_point()+
+  geom_smooth(method = "loess")+
+  theme_classic()+
+  xlab("Age at Baseline")+
+  ylab("CES-D Score")
+
+```
+
+### Education  
+
+```{r}
+#| label: Education 
+
+rise_dat$EDUC3 <- factor(rise_dat$EDUC3, levels = c(1,2,3), labels = c("At most high school degree", "College graduate", "Post-Graduate Degree"))
+
+# Create boxplot
+ggplot(rise_dat, aes(x = EDUC3, y = CESD_BL, fill = EDUC3)) +
+  geom_boxplot() +
+  labs(x = "Education Level", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF"), 
+                    labels = c("At most high school degree", "College graduate", "Postgraduate")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+### Race  
+```{r}
+rise_dat$RACE5 <- factor(rise_dat$RACE5, levels = c(1,2,3,4,5), labels = c("White", "Black", "Asian", "Latina", "Other"))
+
+# Create boxplot
+ggplot(rise_dat, aes(x = RACE5, y = CESD_BL, fill = RACE5)) +
+  geom_boxplot() +
+  labs(x = "Race", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF", "#F564E3", "#56B4E9"), 
+                    labels = c("White", "Black", "Asian", "Latina", "Other")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+### Income  
+```{r}
+rise_dat$INCOME3[is.na(rise_dat$INCOME3)] <- 999
+
+rise_dat$INCOME3 <- factor(rise_dat$INCOME3, levels = c(1,2,3,999), labels = c("< $60k", "$60k-$100k",">= $100k", "NA"))
+
+# Create boxplot
+ggplot(rise_dat, aes(x = INCOME3, y = CESD_BL, fill = INCOME3)) +
+  geom_boxplot() +
+  labs(x = "Income", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF", "#808080"), 
+                    labels = c("< $60k", "$60k-$100k",">= $100k", "NA")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+### Employment  
+
+```{r}
+rise_dat$EMPLOY3_v2 <- ifelse(rise_dat$EMPLOY3 == 3, 0,1)
+
+rise_dat$EMPLOY3_v2 <- factor(rise_dat$EMPLOY3_v2, levels = c(0,1), labels = c("Not Employed", "Employed"))
+
+
+ggplot(rise_dat, aes(x = EMPLOY3_v2, y = CESD_BL, fill = EMPLOY3_v2)) +
+  geom_boxplot() +
+  labs(x = "Employment Status", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#619CFF"), 
+                    labels = c("Not Employed", "Employed")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+
+```
+
+### Marital Status  
+
+```{r}
+rise_dat$MARRIED2 <- factor(rise_dat$MARRIED2, levels = c(0,1), labels = c("No", "Yes"))
+
+ggplot(rise_dat, aes(x = MARRIED2, y = CESD_BL, fill = MARRIED2)) +
+  geom_boxplot() +
+  labs(x = "Married?", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#619CFF"), 
+                    labels = c("No", "Yes")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+## Disease and Treatment-Related Variables  
+
+### Cancer Stage at Diagnosis  
+
+```{r}
+rise_dat$Cancer_Stage <- ifelse(rise_dat$STAGEDX_PG >= 3, 3, rise_dat$STAGEDX_PG)
+
+rise_dat$Cancer_Stage[is.na(rise_dat$Cancer_Stage)] <- 999
+
+rise_dat$Cancer_Stage <- factor(rise_dat$Cancer_Stage, levels = c(0,1,2,3,999), labels = c("0", "1", "2", "3 or higher", "NA"))
+
+ggplot(rise_dat, aes(x = Cancer_Stage, y = CESD_BL, fill = Cancer_Stage)) +
+  geom_boxplot() +
+  labs(x = "Cancer Stage", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF", "#F564E3", "#808080"), 
+                    labels = c("0", "1", "2", "3 or higher", "NA")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+### Breast Cancer Surgery Type  
+
+```{r}
+rise_dat$SurgType <- factor(rise_dat$SURGTYPE_ENROLLMENT_BINARY, levels = c(0,1,2), labels = c("None", "Lumpectomy", "Mastectomy"))
+
+ggplot(rise_dat, aes(x = SurgType, y = CESD_BL, fill = SurgType)) +
+  geom_boxplot() +
+  labs(x = "Surgery Before Enrollment", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF"), 
+                    labels = c("None", "Lumpectomy", "Mastectomy")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+## Biobehavioral Risk Factors  
+
+### BMI
+```{r}
+ggplot(rise_dat, aes(x = BMI_BL, y = CESD_BL))+
+  geom_point()+
+  geom_smooth(method = "loess")+
+  theme_classic()+
+  xlab("BMI at Baseline")+
+  ylab("CES-D Score")
+
+```
+### Charlson Comorbidity Index  
+
+```{r}
+rise_dat$N_MedCond <- factor(rise_dat$CHARLSON)
+
+ggplot(rise_dat, aes(x = N_MedCond, y = CESD_BL, fill = N_MedCond)) +
+  geom_boxplot() +
+  labs(x = "# Medical Conditions", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF","#F564E3"), 
+                    labels = c("0", "1", "2", "3")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+```
+
+### Childhood Maltreatment  
+
+```{r}
+rise_dat$ChildMalTrt <- factor(rise_dat$CTQ_WALKER_CAT_BL, levels = c(0,1,2), labels = c("None", "Nonsexual", "Sexual"))
+
+ggplot(rise_dat, aes(x = ChildMalTrt, y = CESD_BL, fill = ChildMalTrt)) +
+  geom_boxplot() +
+  labs(x = "Child Maltreatment", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#619CFF"), 
+                    labels = c("None", "Nonsexual", "Sexual")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+### Past History of Depression  
+
+```{r}
+rise_dat$SCID_PHMDD[is.na(rise_dat$SCID_PHMDD)] <- 999
+
+rise_dat$depresso <- factor(rise_dat$SCID_PHMDD, levels = c(0,1,999), labels = c("No", "Yes", "NA"))
+
+ggplot(rise_dat, aes(x = depresso, y = CESD_BL, fill = depresso)) +
+  geom_boxplot() +
+  labs(x = "Past History of Depression", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38", "#808080"), 
+                    labels =  c("No", "Yes", "NA")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+
+### Leisure-Time Exercise  
+
+```{r}
+rise_dat$GODIN2[is.na(rise_dat$GODIN2)] <- 999
+
+rise_dat$exercise <- factor(rise_dat$GODIN2, levels = c(1,2,3,999), labels = c("Often", "Sometimes", "Never/Rarely","NA"))
+
+ggplot(rise_dat, aes(x = exercise, y = CESD_BL, fill = exercise)) +
+  geom_boxplot() +
+  labs(x = "Leisure-time Exercise", y = "CES-D Score") +
+  scale_fill_manual(values = c("#F8766D", "#00BA38","#619CFF", "#808080"), 
+                    labels =  c("Often", "Sometimes", "Never/Rarely","NA")) +
+  theme_classic()+
+  theme(legend.position = "none", axis.text.x = element_text(size = 10))
+
+```
+### ALCOHOOOOOOL 
+```{r}
+ggplot(rise_dat, aes(x = ALC_DRINKS_PAST_YEAR, y = CESD_BL))+
+  geom_point()+
+  geom_smooth(method = "loess")+
+  theme_classic()+
+  xlab("# of Alcohol Drinks in the Past Year")+
+  ylab("CES-D Score")
+```
